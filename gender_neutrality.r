@@ -138,5 +138,25 @@ for (f in list.files("data", full.names = TRUE)) {
       height = 0.25 * n_distinct(heat.map$data$IPA), # ~1/4" for each pronunciation
       limitsize = FALSE # allow for a big plot
     )
+
+
+    # A different sorting function
+    boxplot.sum <- function(x) {
+      return(sum(boxplot.stats(x)$stats)) # add median and ends of box and whiskers
+    }
+
+    # Make a box plot of variability in scores
+    ggplot(heat.map$data) +
+      geom_boxplot(aes(x = score, y = stats::reorder(name, score, FUN = boxplot.sum)))
+
+    # Draw box plot
+    ggsave(
+      filename = sub(pattern = ".csv", replacement = "-variability.svg", f), # match with data set name
+      device = svg, # `"svg"` (vs. `svg()`) requires `library(svglite)`
+      units = "in", # this is default, but just to clarify
+      width = 20, # number pulled out of my ass
+      height = n_distinct(heat.map$data$name), # ~1" for each name
+      limitsize = FALSE # allow for a big plot
+    )
   }
 }
